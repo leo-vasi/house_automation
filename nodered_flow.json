@@ -1,0 +1,1134 @@
+[
+    {
+        "id": "c1bce40c3c39a0ad",
+        "type": "tab",
+        "label": "HomeIoT",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "mqtt_sensors_in",
+        "type": "mqtt in",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Recebe Sensores",
+        "topic": "11232100617/home/sensors",
+        "broker": "broker1",
+        "inputs": 0,
+        "x": 450,
+        "y": 200,
+        "wires": [
+            [
+                "parse_sensors"
+            ]
+        ]
+    },
+    {
+        "id": "parse_sensors",
+        "type": "json",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Parse JSON",
+        "x": 690,
+        "y": 160,
+        "wires": [
+            [
+                "split_sensors",
+                "save_last_reading"
+            ]
+        ]
+    },
+    {
+        "id": "save_last_reading",
+        "type": "function",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Salva ultima leitura",
+        "func": "global.set('last_reading', msg.payload);\nreturn null;",
+        "outputs": 1,
+        "x": 910,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "split_sensors",
+        "type": "function",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Separa campos",
+        "func": "var d = msg.payload;\nnode.send([\n  [{payload: d.temperature, timestamp: Date.now()}],\n  [{payload: d.humidity}],\n  [{payload: d.ldr}],\n  [{payload: d.gas}],\n  [{payload: d.motion ? 'SIM' : 'NAO'}],\n  [{payload: d.relay1 ? 'ON' : 'OFF'}],\n  [{payload: d.relay2 ? 'ON' : 'OFF'}],\n  [{payload: d.relay3 ? 'ON' : 'OFF'}],\n  [{payload: d.relay4 ? 'ON' : 'OFF'}],\n  [{payload: d.servo}]\n]);",
+        "outputs": 10,
+        "x": 860,
+        "y": 320,
+        "wires": [
+            [
+                "gauge_temp",
+                "chart_temp"
+            ],
+            [
+                "gauge_hum"
+            ],
+            [
+                "gauge_ldr"
+            ],
+            [
+                "gauge_gas"
+            ],
+            [
+                "text_motion"
+            ],
+            [
+                "text_r1"
+            ],
+            [
+                "text_r2"
+            ],
+            [
+                "text_r3"
+            ],
+            [
+                "text_r4"
+            ],
+            [
+                "gauge_servo"
+            ]
+        ]
+    },
+    {
+        "id": "gauge_temp",
+        "type": "ui-gauge",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Temperatura",
+        "group": "grp_sensores",
+        "order": 1,
+        "value": "payload",
+        "valueType": "msg",
+        "width": "3",
+        "height": "3",
+        "gtype": "gauge-34",
+        "title": "",
+        "alwaysShowTitle": false,
+        "units": "",
+        "icon": "",
+        "prefix": "",
+        "suffix": "°C",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#00b500",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "30",
+                "color": "#e6e600",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "38",
+                "color": "#ca3838",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": 50,
+        "sizeThickness": "",
+        "sizeGap": "",
+        "sizeKeyThickness": "",
+        "className": "",
+        "x": 1200,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "chart_temp",
+        "type": "ui-chart",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_sensores",
+        "name": "Historico Temp",
+        "label": "Temperatura (historico)",
+        "order": 2,
+        "chartType": "line",
+        "category": "temperature",
+        "categoryType": "str",
+        "xAxisLabel": "",
+        "xAxisProperty": "timestamp",
+        "xAxisPropertyType": "msg",
+        "xAxisType": "time",
+        "xAxisFormat": "",
+        "xAxisFormatType": "auto",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "",
+        "yAxisProperty": "payload",
+        "yAxisPropertyType": "property",
+        "ymin": "0",
+        "ymax": "50",
+        "bins": "",
+        "action": "append",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "2",
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "",
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": "6",
+        "height": "3",
+        "className": "",
+        "interpolation": "linear",
+        "x": 1200,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gauge_hum",
+        "type": "ui-gauge",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Umidade",
+        "group": "grp_sensores",
+        "order": 3,
+        "value": "payload",
+        "valueType": "msg",
+        "width": "3",
+        "height": "3",
+        "gtype": "gauge-34",
+        "title": "",
+        "alwaysShowTitle": false,
+        "units": "",
+        "icon": "",
+        "prefix": "",
+        "suffix": "%",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#00b500",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "70",
+                "color": "#e6e600",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "85",
+                "color": "#ca3838",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": 100,
+        "sizeThickness": "",
+        "sizeGap": "",
+        "sizeKeyThickness": "",
+        "className": "",
+        "x": 1220,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gauge_ldr",
+        "type": "ui-gauge",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Luminosidade",
+        "group": "grp_sensores",
+        "order": 4,
+        "value": "payload",
+        "valueType": "msg",
+        "width": "3",
+        "height": "3",
+        "gtype": "gauge-34",
+        "title": "",
+        "alwaysShowTitle": false,
+        "units": "",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#ca3838",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "1000",
+                "color": "#e6e600",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "3000",
+                "color": "#00b500",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": 4095,
+        "sizeThickness": "",
+        "sizeGap": "",
+        "sizeKeyThickness": "",
+        "className": "",
+        "x": 1180,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gauge_gas",
+        "type": "ui-gauge",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Gas",
+        "group": "grp_sensores",
+        "order": 5,
+        "value": "payload",
+        "valueType": "msg",
+        "width": "3",
+        "height": "3",
+        "gtype": "gauge-34",
+        "title": "",
+        "alwaysShowTitle": false,
+        "units": "",
+        "icon": "",
+        "prefix": "",
+        "suffix": "%",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#00b500",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "40",
+                "color": "#e6e600",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "60",
+                "color": "#ca3838",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": 100,
+        "sizeThickness": "",
+        "sizeGap": "",
+        "sizeKeyThickness": "",
+        "className": "",
+        "x": 1190,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "text_motion",
+        "type": "ui-text",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_sensores",
+        "order": 6,
+        "width": "3",
+        "height": "1",
+        "name": "Movimento",
+        "label": "Movimento",
+        "x": 1190,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "gauge_servo",
+        "type": "ui-gauge",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Servo",
+        "group": "grp_servo",
+        "order": 1,
+        "value": "payload",
+        "valueType": "msg",
+        "width": "3",
+        "height": "3",
+        "gtype": "gauge-34",
+        "title": "",
+        "alwaysShowTitle": false,
+        "units": "",
+        "icon": "",
+        "prefix": "",
+        "suffix": "°",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#38bdf8",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": 180,
+        "sizeThickness": "",
+        "sizeGap": "",
+        "sizeKeyThickness": "",
+        "className": "",
+        "x": 1070,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "text_r1",
+        "type": "ui-text",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "order": 1,
+        "width": "3",
+        "height": "1",
+        "name": "Relay1",
+        "label": "Luzes do Andar",
+        "x": 1200,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "text_r2",
+        "type": "ui-text",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "order": 4,
+        "width": "3",
+        "height": "1",
+        "name": "Relay2",
+        "label": "Alarme Sonoro",
+        "x": 1160,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "text_r3",
+        "type": "ui-text",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "order": 6,
+        "width": "3",
+        "height": "1",
+        "name": "Relay3",
+        "label": "Exaustor Gas",
+        "x": 1160,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "text_r4",
+        "type": "ui-text",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "order": 8,
+        "width": "3",
+        "height": "1",
+        "name": "Relay4",
+        "label": "Ar-Condicionado",
+        "x": 1160,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "btn_r1_on",
+        "type": "ui-button",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "name": "R1 Ligar",
+        "label": "Ligar",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "on",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "buttonColor": "'#22c55e'",
+        "textColor": "'#000000'",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1510,
+        "y": 200,
+        "wires": [
+            [
+                "set_topic_r1"
+            ]
+        ]
+    },
+    {
+        "id": "btn_r1_off",
+        "type": "ui-button",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "name": "R1 Desligar",
+        "label": "Desligar",
+        "order": 3,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "off",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "buttonColor": "'#ef4444'",
+        "textColor": "'#ffffff'",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1510,
+        "y": 240,
+        "wires": [
+            [
+                "set_topic_r1"
+            ]
+        ]
+    },
+    {
+        "id": "set_topic_r1",
+        "type": "change",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Topic R1",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "11232100617/home/actuators/relay1",
+                "tot": "str"
+            }
+        ],
+        "x": 1730,
+        "y": 220,
+        "wires": [
+            [
+                "mqtt_relays_out"
+            ]
+        ]
+    },
+    {
+        "id": "btn_r2_on",
+        "type": "ui-button",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "name": "R2 Ligar",
+        "label": "Ligar",
+        "order": 12,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "on",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "buttonColor": "'#ef4444'",
+        "textColor": "'#000000'",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1510,
+        "y": 280,
+        "wires": [
+            [
+                "set_topic_r2"
+            ]
+        ]
+    },
+    {
+        "id": "btn_r2_off",
+        "type": "ui-button",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "name": "R2 Desligar",
+        "label": "Desligar",
+        "order": 5,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "off",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "buttonColor": "'#ef4444'",
+        "textColor": "'#ffffff'",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1510,
+        "y": 320,
+        "wires": [
+            [
+                "set_topic_r2"
+            ]
+        ]
+    },
+    {
+        "id": "set_topic_r2",
+        "type": "change",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Topic R2",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "11232100617/home/actuators/relay2",
+                "tot": "str"
+            }
+        ],
+        "x": 1730,
+        "y": 300,
+        "wires": [
+            [
+                "mqtt_relays_out"
+            ]
+        ]
+    },
+    {
+        "id": "btn_r3_on",
+        "type": "ui-button",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "name": "R3 Ligar",
+        "label": "Ligar",
+        "order": 11,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "on",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "buttonColor": "'#22c55e'",
+        "textColor": "'#000000'",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1510,
+        "y": 360,
+        "wires": [
+            [
+                "set_topic_r3"
+            ]
+        ]
+    },
+    {
+        "id": "btn_r3_off",
+        "type": "ui-button",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "name": "R3 Desligar",
+        "label": "Desligar",
+        "order": 7,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "off",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "buttonColor": "'#ef4444'",
+        "textColor": "'#ffffff'",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1510,
+        "y": 400,
+        "wires": [
+            [
+                "set_topic_r3"
+            ]
+        ]
+    },
+    {
+        "id": "set_topic_r3",
+        "type": "change",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Topic R3",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "11232100617/home/actuators/relay3",
+                "tot": "str"
+            }
+        ],
+        "x": 1730,
+        "y": 380,
+        "wires": [
+            [
+                "mqtt_relays_out"
+            ]
+        ]
+    },
+    {
+        "id": "btn_r4_on",
+        "type": "ui-button",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "name": "R4 Ligar",
+        "label": "Ligar",
+        "order": 10,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "on",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "buttonColor": "'#22c55e'",
+        "textColor": "'#000000'",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1510,
+        "y": 440,
+        "wires": [
+            [
+                "set_topic_r4"
+            ]
+        ]
+    },
+    {
+        "id": "btn_r4_off",
+        "type": "ui-button",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_relays",
+        "name": "R4 Desligar",
+        "label": "Desligar",
+        "order": 9,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "off",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "buttonColor": "'#ef4444'",
+        "textColor": "'#ffffff'",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 1510,
+        "y": 480,
+        "wires": [
+            [
+                "set_topic_r4"
+            ]
+        ]
+    },
+    {
+        "id": "set_topic_r4",
+        "type": "change",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Topic R4",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "11232100617/home/actuators/relay4",
+                "tot": "str"
+            }
+        ],
+        "x": 1730,
+        "y": 460,
+        "wires": [
+            [
+                "mqtt_relays_out"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt_relays_out",
+        "type": "mqtt out",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Pub Relays",
+        "broker": "broker1",
+        "x": 1950,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "slider_servo",
+        "type": "ui-slider",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_servo",
+        "name": "Servo Slider",
+        "label": "Persiana (0-180°)",
+        "order": 2,
+        "width": "6",
+        "height": "1",
+        "min": "0",
+        "max": "180",
+        "step": "10",
+        "x": 1450,
+        "y": 800,
+        "wires": [
+            [
+                "mqtt_servo_out"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt_servo_out",
+        "type": "mqtt out",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Pub Servo",
+        "topic": "11232100617/home/actuators/servo",
+        "broker": "broker1",
+        "x": 1710,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "mqtt_alerts_in",
+        "type": "mqtt in",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Recebe Alertas",
+        "topic": "11232100617/home/alerts",
+        "broker": "broker1",
+        "inputs": 0,
+        "x": 400,
+        "y": 820,
+        "wires": [
+            [
+                "parse_alerts"
+            ]
+        ]
+    },
+    {
+        "id": "parse_alerts",
+        "type": "json",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Parse Alertas",
+        "x": 610,
+        "y": 860,
+        "wires": [
+            [
+                "format_alert"
+            ]
+        ]
+    },
+    {
+        "id": "format_alert",
+        "type": "function",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Formata Alerta",
+        "func": "var alerts = msg.payload.alerts || [];\nvar now = new Date().toLocaleString('pt-BR');\nmsg.payload = '[' + now + '] ' + alerts.join(' | ');\nreturn msg;",
+        "outputs": 1,
+        "x": 820,
+        "y": 820,
+        "wires": [
+            [
+                "text_alertas",
+                "notif_alert",
+                "07194d13f9fccbb1"
+            ]
+        ]
+    },
+    {
+        "id": "text_alertas",
+        "type": "ui-text",
+        "z": "c1bce40c3c39a0ad",
+        "group": "grp_alertas",
+        "order": 1,
+        "width": "6",
+        "height": "1",
+        "name": "Alertas",
+        "label": "Ultimo Alerta",
+        "x": 1080,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "notif_alert",
+        "type": "ui-notification",
+        "z": "c1bce40c3c39a0ad",
+        "ui": "ui_base_estufa",
+        "position": "top right",
+        "displayTime": "5",
+        "outputs": 1,
+        "name": "Popup Alerta",
+        "x": 1070,
+        "y": 880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "inject_2h",
+        "type": "inject",
+        "z": "c1bce40c3c39a0ad",
+        "name": "A cada 2 horas",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
+        "x": 460,
+        "y": 1100,
+        "wires": [
+            [
+                "get_last_reading"
+            ]
+        ]
+    },
+    {
+        "id": "get_last_reading",
+        "type": "function",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Pega ultima leitura",
+        "func": "var d = global.get('last_reading') || {};\nvar now = new Date();\nvar dt = now.getFullYear()+'-'+(now.getMonth()+1).toString().padStart(2,'0')+'-'+now.getDate().toString().padStart(2,'0')+' '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');\nmsg.payload = {\n  datetime:    dt,\n  temperatura: d.temperature || 0,\n  umidade:     d.humidity || 0,\n  ldr:         d.ldr || 0,\n  gas:         d.gas || 0,\n  movimento:   d.motion ? 'SIM' : 'NAO',\n  relay1:      d.relay1 ? 'ON' : 'OFF',\n  relay2:      d.relay2 ? 'ON' : 'OFF',\n  relay3:      d.relay3 ? 'ON' : 'OFF',\n  relay4:      d.relay4 ? 'ON' : 'OFF'\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 710,
+        "y": 1020,
+        "wires": [
+            [
+                "send_sheets"
+            ]
+        ]
+    },
+    {
+        "id": "send_sheets",
+        "type": "http request",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Envia ao Google Sheets",
+        "method": "POST",
+        "ret": "txt",
+        "url": "https://script.google.com/macros/s/AKfycbxzH29lPE7td7NVaogy2tYdUAk6xxNB4EYu0E3--hDfyOcZprE_HZ4JjzSQCgbkdxWDbQ/exec",
+        "x": 950,
+        "y": 1040,
+        "wires": [
+            [
+                "log_sheets"
+            ]
+        ]
+    },
+    {
+        "id": "log_sheets",
+        "type": "debug",
+        "z": "c1bce40c3c39a0ad",
+        "name": "Resposta Sheets",
+        "active": true,
+        "x": 1290,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "07194d13f9fccbb1",
+        "type": "e-mail",
+        "z": "c1bce40c3c39a0ad",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": true,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "levasi.leonardo55@gmail.com",
+        "dname": "alerta gmail",
+        "x": 1110,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "broker1",
+        "type": "mqtt-broker",
+        "name": "HiveMQ Publico",
+        "broker": "broker.hivemq.com",
+        "port": "1883",
+        "clientid": "nodered_11232100617",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true
+    },
+    {
+        "id": "grp_sensores",
+        "type": "ui-group",
+        "name": "Sensores",
+        "page": "page1",
+        "width": "6",
+        "order": 1
+    },
+    {
+        "id": "grp_servo",
+        "type": "ui-group",
+        "name": "Persiana",
+        "page": "page1",
+        "width": "6",
+        "order": 3
+    },
+    {
+        "id": "grp_relays",
+        "type": "ui-group",
+        "name": "Relays",
+        "page": "page1",
+        "width": "6",
+        "order": 2
+    },
+    {
+        "id": "grp_alertas",
+        "type": "ui-group",
+        "name": "Alertas",
+        "page": "page1",
+        "width": "6",
+        "order": 4
+    },
+    {
+        "id": "ui_base_estufa",
+        "type": "ui-base",
+        "name": "Dashboard Estufas",
+        "path": "/dashboard",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "navigationStyle": "default"
+    },
+    {
+        "id": "page1",
+        "type": "ui-page",
+        "name": "Casa Inteligente",
+        "ui": "ui_base_estufa",
+        "path": "/",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "theme1",
+        "order": 2
+    },
+    {
+        "id": "theme1",
+        "type": "ui-theme",
+        "name": "Tema Escuro",
+        "colors": {
+            "surface": "#1e293b",
+            "primary": "#38bdf8",
+            "bgPage": "#0f172a"
+        }
+    },
+    {
+        "id": "60a4894220757751",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.30.2",
+            "node-red-node-email": "5.2.3"
+        }
+    }
+]
