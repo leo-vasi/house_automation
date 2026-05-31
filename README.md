@@ -59,11 +59,6 @@ Sensores (LDR, DHT22, PIR, Gas)
         |               |-- Envio de e-mail (node-red-node-email)
         |               |-- Registro no Google Sheets (a cada 2h)
         |
-        +--------> Página web embarcada no ESP32
-                        |-- Leituras dos sensores (atualiza a cada 3s)
-                        |-- Botões individuais por relay
-                        |-- Controle do servo por slider
-                        |-- Exibição de alertas ativos
 ```
 
 ---
