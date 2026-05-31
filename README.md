@@ -81,7 +81,7 @@ homeiot/
 ├── mqtt_client.py         # Conexao MQTT, publish e subscribe
 ├── ssd1306.py             # Driver do display OLED SSD1306 (MIT, micropython-lib)
 ├── nodered_flow.json      # Flow completo do Node-RED para importacao
-└── google_apps_script.js  # Webhook para registro no Google Sheets
+└── casa_inteligente_iot.js  # Webhook para registro no Google Sheets
 ```
 
 ---
