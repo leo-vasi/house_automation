@@ -74,6 +74,7 @@ homeiot/
 ├── sensors.py             # Leitura dos quatro sensores e geração de alertas
 ├── actuators.py           # Controle dos relays, servo motor e display OLED
 ├── mqtt_client.py         # Conexão MQTT, publish e subscribe
+├── web_server.py          # Servidor HTTP
 ├── ssd1306.py             # Driver do display OLED SSD1306 (MIT, micropython-lib)
 ├── nodered_flow.json      # Flow completo do Node-RED para importação
 └── casa_inteligente_iot.js  # Webhook para registro no Google Sheets
